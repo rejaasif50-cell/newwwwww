@@ -1,0 +1,6 @@
+{
+  "name": "CSC Digital Seva Kendra Manager",
+  "description": "Comprehensive CSC Centre management portal for customer ledger khata, daily cash register, service order tracking, and receipt generation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

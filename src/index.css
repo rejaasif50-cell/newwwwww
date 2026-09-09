@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@media print {
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+  header, nav, #btn-print-receipt, button, .print\:hidden {
+    display: none !important;
+  }
+  #csc-printable-receipt {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+}
