@@ -23,6 +23,7 @@ import {
   QrCode,
   Layers,
   Lock,
+  Users,
 } from 'lucide-react';
 
 interface AdminManageModalProps {
@@ -33,6 +34,7 @@ interface AdminManageModalProps {
   serviceCatalog: ServiceCatalogItem[];
   onUpdateServiceCatalog: (catalog: ServiceCatalogItem[]) => void;
   customers: Customer[];
+  onUpdateCustomers?: (customers: Customer[]) => void;
   ledgerTxns: LedgerTransaction[];
   cashEntries: CashEntry[];
   serviceOrders: ServiceOrder[];
@@ -54,7 +56,7 @@ export const AdminManageModal: React.FC<AdminManageModalProps> = ({
   onResetAllData,
   onLogoutAdmin,
 }) => {
-  const [activeTab, setActiveTab] = useState<'catalog' | 'profile' | 'security' | 'data'>('catalog');
+  const [activeTab, setActiveTab] = useState<'catalog' | 'profile' | 'customers' | 'security' | 'data'>('catalog');
 
   // Service Catalog state
   const [catalogSearch, setCatalogSearch] = useState('');
@@ -278,6 +280,18 @@ export const AdminManageModal: React.FC<AdminManageModalProps> = ({
           >
             <Building2 className="w-3.5 h-3.5" />
             Centre Profile & VLE Info
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('customers')}
+            className={`px-4 py-2.5 text-xs font-bold whitespace-nowrap transition-colors flex items-center gap-2 ${
+              activeTab === 'customers'
+                ? 'bg-blue-900 text-white shadow-xs'
+                : 'text-slate-600 hover:text-blue-950 hover:bg-slate-200'
+            }`}
+          >
+            <Users className="w-3.5 h-3.5" />
+            Manage Customers
           </button>
           <button
             type="button"
@@ -581,6 +595,73 @@ export const AdminManageModal: React.FC<AdminManageModalProps> = ({
           )}
 
           {/* TAB 2: CENTRE PROFILE & VLE SETTINGS */}
+          {activeTab === 'customers' && (
+            <div className="space-y-4">
+              <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900">Manage Customers</h3>
+                    <p className="text-xs text-slate-500">View and remove customers from the database.</p>
+                  </div>
+                </div>
+                
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-sm whitespace-nowrap">
+                    <thead>
+                      <tr className="bg-slate-50 border-b border-slate-200 text-slate-500">
+                        <th className="font-semibold p-3 rounded-tl-lg">Name</th>
+                        <th className="font-semibold p-3">Phone</th>
+                        <th className="font-semibold p-3">Village/Ward</th>
+                        <th className="font-semibold p-3 text-right">Balance</th>
+                        <th className="font-semibold p-3 text-center rounded-tr-lg">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {customers.map((c) => (
+                        <tr key={c.id} className="hover:bg-slate-50/50">
+                          <td className="p-3 font-medium text-slate-900">{c.name}</td>
+                          <td className="p-3 text-slate-600 font-mono text-xs">{c.phone}</td>
+                          <td className="p-3 text-slate-600">{c.villageOrWard}</td>
+                          <td className="p-3 text-right font-medium">
+                            {c.balance > 0 ? (
+                              <span className="text-rose-600">Due {formatCurrency(c.balance)}</span>
+                            ) : c.balance < 0 ? (
+                              <span className="text-emerald-600">Adv {formatCurrency(Math.abs(c.balance))}</span>
+                            ) : (
+                              <span className="text-slate-400">₹0</span>
+                            )}
+                          </td>
+                          <td className="p-3 text-center">
+                            <button
+                              onClick={() => {
+                                if (window.confirm(`Are you sure you want to delete customer ${c.name}? This cannot be undone.`)) {
+                                  const updated = customers.filter(cust => cust.id !== c.id);
+                                  storage.setCustomers(updated);
+                                  if (onUpdateCustomers) onUpdateCustomers(updated);
+                                }
+                              }}
+                              className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                              title="Delete Customer"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                      {customers.length === 0 && (
+                        <tr>
+                          <td colSpan={5} className="p-8 text-center text-slate-500 text-xs">
+                            No customers found.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
           {activeTab === 'profile' && (
             <form onSubmit={handleSaveProfile} className="space-y-4">
               <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs space-y-4">

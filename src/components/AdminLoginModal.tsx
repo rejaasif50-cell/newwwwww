@@ -29,8 +29,8 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
   isAdminLoggedIn,
   onLogout,
 }) => {
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('admin123');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [activeSubTab, setActiveSubTab] = useState<'login' | 'change_password'>('login');
@@ -304,21 +304,6 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
-              </div>
-
-              {/* Default Credential helper pill */}
-              <div className="p-3 bg-amber-50/90 border border-amber-200/80 rounded-xl text-amber-900 text-xs">
-                <p className="font-semibold flex items-center gap-1.5 text-amber-950">
-                  <ShieldCheck className="w-4 h-4 text-amber-600 shrink-0" />
-                  Default Admin Login:
-                </p>
-                <div className="mt-1 flex items-center justify-between text-[11px] font-mono bg-amber-100/70 px-2 py-1 rounded">
-                  <span>Username: <strong>admin</strong></span>
-                  <span>Password: <strong>admin123</strong></span>
-                </div>
-                <p className="text-[10px] text-amber-700 mt-1">
-                  (You can change this password anytime in settings)
-                </p>
               </div>
 
               <button

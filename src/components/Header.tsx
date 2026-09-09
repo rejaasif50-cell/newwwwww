@@ -11,6 +11,7 @@ import {
   BookOpen,
   ArrowDownToLine,
   Lock,
+  LogOut,
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -23,6 +24,7 @@ interface HeaderProps {
   isAdminLoggedIn: boolean;
   onOpenAdminLogin: () => void;
   onOpenAdminManage: () => void;
+  onAdminLogout: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -35,6 +37,7 @@ export const Header: React.FC<HeaderProps> = ({
   isAdminLoggedIn,
   onOpenAdminLogin,
   onOpenAdminManage,
+  onAdminLogout,
 }) => {
   return (
     <header className="bg-gradient-to-r from-blue-950 via-indigo-900 to-blue-900 text-white shadow-md border-b border-blue-800 sticky top-0 z-30">
@@ -91,17 +94,28 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Admin Status & Login/Manage Button */}
             {isAdminLoggedIn ? (
-              <button
-                id="btn-admin-manage"
-                type="button"
-                onClick={onOpenAdminManage}
-                className="px-2.5 py-1.5 text-xs font-bold rounded-lg bg-amber-400 hover:bg-amber-300 text-blue-950 flex items-center gap-1.5 shadow-sm transition-all cursor-pointer border border-amber-300"
-                title="Open Admin Management (Rates, Profile, Data)"
-              >
-                <ShieldCheck className="w-3.5 h-3.5 text-blue-950" />
-                <span className="hidden sm:inline">Admin Panel</span>
-                <span className="sm:hidden">Admin</span>
-              </button>
+              <div className="flex items-center gap-1.5">
+                <button
+                  id="btn-admin-manage"
+                  type="button"
+                  onClick={onOpenAdminManage}
+                  className="px-2.5 py-1.5 text-xs font-bold rounded-lg bg-amber-400 hover:bg-amber-300 text-blue-950 flex items-center gap-1.5 shadow-sm transition-all cursor-pointer border border-amber-300"
+                  title="Open Admin Management (Rates, Profile, Data)"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5 text-blue-950" />
+                  <span className="hidden sm:inline">Admin Panel</span>
+                  <span className="sm:hidden">Admin</span>
+                </button>
+                <button
+                  id="btn-admin-logout"
+                  type="button"
+                  onClick={onAdminLogout}
+                  className="p-1.5 text-amber-200 hover:text-white bg-blue-900/50 hover:bg-rose-900/80 rounded-lg transition-colors cursor-pointer border border-transparent hover:border-rose-700"
+                  title="Logout Admin"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
             ) : (
               <button
                 id="btn-admin-login"

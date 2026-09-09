@@ -23,6 +23,7 @@ import { ProfileSettingsModal } from './components/ProfileSettingsModal';
 import { ReceiptModal } from './components/ReceiptModal';
 import { AdminLoginModal } from './components/AdminLoginModal';
 import { AdminManageModal } from './components/AdminManageModal';
+import { AIChatWidget } from './components/AIChatWidget';
 
 export default function App() {
   // Navigation State
@@ -349,6 +350,7 @@ export default function App() {
         isAdminLoggedIn={isAdminLoggedIn}
         onOpenAdminLogin={() => setShowAdminLoginModal(true)}
         onOpenAdminManage={() => setShowAdminManageModal(true)}
+        onAdminLogout={handleAdminLogout}
       />
 
       {/* Secondary Desktop Tabs & Mobile Bottom Navigation Bar */}
@@ -447,14 +449,22 @@ export default function App() {
       {/* Admin Management Dashboard Modal */}
       {showAdminManageModal && (
         <AdminManageModal
-          profile={profile}
-          catalog={catalog}
-          lang={lang}
+          isOpen={showAdminManageModal}
           onClose={() => setShowAdminManageModal(false)}
-          onSaveProfile={setProfile}
-          onSaveCatalog={handleUpdateCatalog}
-          onLogout={handleAdminLogout}
-          onReloadAfterImport={handleReloadAll}
+          profile={profile}
+          onUpdateProfile={setProfile}
+          serviceCatalog={catalog}
+          onUpdateServiceCatalog={handleUpdateCatalog}
+          customers={customers}
+          onUpdateCustomers={setCustomers}
+          ledgerTxns={ledgerTxns}
+          cashEntries={cashEntries}
+          serviceOrders={serviceOrders}
+          onResetAllData={() => {
+            storage.resetAll();
+            handleReloadAll();
+          }}
+          onLogoutAdmin={handleAdminLogout}
         />
       )}
 
@@ -482,6 +492,9 @@ export default function App() {
           onClose={() => setActiveReceiptModal(null)}
         />
       )}
+
+      {/* AI Chatbot Widget */}
+      <AIChatWidget />
     </div>
   );
 }
