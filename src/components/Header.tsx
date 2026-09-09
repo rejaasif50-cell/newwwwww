@@ -10,6 +10,7 @@ import {
   Languages,
   BookOpen,
   ArrowDownToLine,
+  Lock,
 } from 'lucide-react';
 
 interface HeaderProps {
