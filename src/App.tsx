@@ -436,9 +436,11 @@ export default function App() {
       {/* Admin Authentication Modal */}
       {showAdminLoginModal && (
         <AdminLoginModal
-          lang={lang}
+          isOpen={showAdminLoginModal}
           onClose={() => setShowAdminLoginModal(false)}
           onLoginSuccess={handleAdminLoginSuccess}
+          isAdminLoggedIn={isAdminLoggedIn}
+          onLogout={handleAdminLogout}
         />
       )}
 
