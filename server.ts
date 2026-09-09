@@ -17,7 +17,7 @@ async function startServer() {
       const { message } = req.body;
       
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-      const response = await ai.models.generateContent({
+      const responseStream = await ai.models.generateContentStream({
         model: 'gemini-3.6-flash',
         contents: [
           {
@@ -27,10 +27,27 @@ async function startServer() {
         ]
       });
       
-      res.json({ answer: response.text });
+      res.setHeader('Content-Type', 'text/event-stream');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Connection', 'keep-alive');
+
+      for await (const chunk of responseStream) {
+        if (chunk.text) {
+          res.write(`data: ${JSON.stringify({ text: chunk.text })}\n\n`);
+        }
+      }
+      res.write('data: [DONE]\n\n');
+      res.end();
     } catch (error: any) {
       console.error('AI Error:', error);
-      res.status(500).json({ answer: 'Sorry, I am having trouble connecting to the AI service right now. Please try again later.' });
+      if (!res.headersSent) {
+        res.setHeader('Content-Type', 'text/event-stream');
+        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('Connection', 'keep-alive');
+      }
+      res.write(`data: ${JSON.stringify({ error: 'Sorry, I am having trouble connecting to the AI service right now. Please try again later.' })}\n\n`);
+      res.write('data: [DONE]\n\n');
+      res.end();
     }
   });
 

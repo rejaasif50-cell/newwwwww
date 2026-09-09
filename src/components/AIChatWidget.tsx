@@ -22,8 +22,58 @@ export const AIChatWidget: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: userMsg }),
       });
-      const data = await response.json();
-      setMessages(prev => [...prev, { role: 'ai', content: data.answer || 'Something went wrong.' }]);
+
+      if (!response.body) throw new Error('No response body');
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
+      let assistantMessage = '';
+      let buffer = '';
+
+      // Add a placeholder message for the AI
+      setMessages(prev => [...prev, { role: 'ai', content: '' }]);
+      setIsLoading(false); // Stop the initial loading spinner as we are receiving data
+
+      while (!done) {
+        const { value, done: doneReading } = await reader.read();
+        done = doneReading;
+        if (value) {
+          buffer += decoder.decode(value, { stream: !done });
+        }
+
+        let boundary = buffer.indexOf('\n\n');
+        while (boundary !== -1) {
+          const messageStr = buffer.slice(0, boundary);
+          buffer = buffer.slice(boundary + 2);
+          
+          if (messageStr.startsWith('data: ')) {
+            const dataStr = messageStr.slice(6);
+            if (dataStr === '[DONE]') {
+              done = true;
+            } else {
+              try {
+                const parsed = JSON.parse(dataStr);
+                if (parsed.error) {
+                  assistantMessage = parsed.error;
+                } else if (parsed.text) {
+                  assistantMessage += parsed.text;
+                }
+                
+                // Update the last message
+                setMessages(prev => {
+                  const newMsgs = [...prev];
+                  newMsgs[newMsgs.length - 1].content = assistantMessage;
+                  return newMsgs;
+                });
+              } catch (e) {
+                // Ignore parsing errors for partial chunks
+              }
+            }
+          }
+          boundary = buffer.indexOf('\n\n');
+        }
+      }
     } catch (error) {
       setMessages(prev => [...prev, { role: 'ai', content: 'Network error. Could not reach the assistant.' }]);
     } finally {
